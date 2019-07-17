@@ -1,0 +1,26 @@
+version: '2.4'
+services:
+
+  nodejs:
+    env_file:
+    - .env
+    build:
+      context: ./
+    command: node index.js
+    environment:
+      MONGO_HOST: mongo
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongo:27017/test --quiet
+      interval: 5s
+      timeout: 5s
+      retries: 5
