@@ -5,3 +5,4 @@ ADD package.json package-lock.json /usr/src/app/
 
 RUN npm install
 ADD index.js /usr/src/app/
+ADD data /usr/src/app/

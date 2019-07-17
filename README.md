@@ -7,3 +7,6 @@ https://eaflood.atlassian.net/browse/FPD-264
 Create a .env file with the following configuration
 ```
 ```
+
+## Running
+`docker-compose up`
