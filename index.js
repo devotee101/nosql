@@ -2,25 +2,26 @@
 
 const MongoClient = require('mongodb').MongoClient
 const assert = require('assert')
+const fs = require('fs')
+const path = require('path')
 
 // Connection URL
 const user = encodeURIComponent(process.env.MONGO_ROOT_USERNAME)
 const password = encodeURIComponent(process.env.MONGO_ROOT_PASSWORD)
 const authMechanism = 'DEFAULT'
 const url = `mongodb://${user}:${password}@mongo:27017/?authMechanism=${authMechanism}`
-console.log(url)
+
 // Database Name
 const dbName = 'myproject'
 
-const insertCategories = (db, callback) => {
-  // Get the documents collection
-  const categories = require('./data/categories.json')
+const insertData = (db, file, callback) => {
+  const data = require(`./data/${file}`)
 
-  const collection = db.collection('categories')
+  const collection = db.collection(path.parse(file).name)
   // Insert some documents
-  collection.insertMany(categories, (err, result) => {
+  collection.insertMany(data, (err, result) => {
     assert.strictEqual(err, null)
-    console.log('inserted categories')
+    console.log(`inserted data from ${file}`)
     callback(result)
   })
 }
@@ -31,8 +32,12 @@ MongoClient.connect(url, (err, client) => {
   console.log('Connected successfully to server')
 
   const db = client.db(dbName)
-  insertCategories(db, () => {
+
+  fs.readdir(`${__dirname}/data`, function (err, items) {
+    assert.strictEqual(err, null)
+    for (var i = 0; i < items.length; i++) {
+      insertData(db, items[i], () => {})
+    }
     client.close()
   })
-  client.close()
 })
