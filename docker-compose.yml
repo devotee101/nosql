@@ -6,7 +6,9 @@ services:
     - .env
     build:
       context: ./
-    command: node index.js
+    command: npm run start.dev
+    volumes:
+      - ./:/usr/src/app
     environment:
       MONGO_HOST: mongo
     depends_on:
