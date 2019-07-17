@@ -10,7 +10,9 @@ services:
     volumes:
       - ./:/usr/src/app
     environment:
-      MONGO_HOST: mongo
+      MONGO_HOST: ${MONGO_HOST}
+      MONGO_PORT: ${MONGO_PORT}
+      MONGO_PARAMS: ${MONGO_PARAMS}
     depends_on:
       mongo:
         condition: service_healthy

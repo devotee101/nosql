@@ -8,8 +8,7 @@ const path = require('path')
 // Connection URL
 const user = encodeURIComponent(process.env.MONGO_ROOT_USERNAME)
 const password = encodeURIComponent(process.env.MONGO_ROOT_PASSWORD)
-const authMechanism = 'DEFAULT'
-const url = `mongodb://${user}:${password}@mongo:27017/?authMechanism=${authMechanism}`
+const url = `mongodb://${user}:${password}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_PARAMS}`
 
 // Database Name
 const dbName = 'myproject'
