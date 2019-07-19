@@ -11,12 +11,16 @@ const password = encodeURIComponent(process.env.MONGO_ROOT_PASSWORD)
 const url = `mongodb://${user}:${password}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_PARAMS}`
 
 // Database Name
-const dbName = 'myproject'
+const dbName = 'ffc-spike-mongo'
 
 const insertData = (db, file, callback) => {
   const data = require(`./data/${file}`)
+  const name = path.parse(file).name
+  const collection = db.collection(name)
 
-  const collection = db.collection(path.parse(file).name)
+  // Delete all
+  collection.deleteMany()
+
   // Insert some documents
   collection.insertMany(data, (err, result) => {
     assert.strictEqual(err, null)
@@ -26,7 +30,7 @@ const insertData = (db, file, callback) => {
 }
 
 // Use connect method to connect to the server
-MongoClient.connect(url, (err, client) => {
+MongoClient.connect(url, { useNewUrlParser: true }, (err, client) => {
   assert.strictEqual(null, err)
   console.log('Connected successfully to server')
 
@@ -34,9 +38,7 @@ MongoClient.connect(url, (err, client) => {
 
   fs.readdir(`${__dirname}/data`, function (err, items) {
     assert.strictEqual(err, null)
-    for (var i = 0; i < items.length; i++) {
-      insertData(db, items[i], () => {})
-    }
+    items.forEach(item => insertData(db, item, () => {}))
     client.close()
   })
 })
