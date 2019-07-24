@@ -2,6 +2,8 @@
 https://eaflood.atlassian.net/browse/FPD-264
 
 ## Prerequisites
+Docker
+Docker Compose
 
 ## Environment variables
 Create a .env file with the following configuration (replace as you see fit)
