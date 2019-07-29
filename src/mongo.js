@@ -27,7 +27,7 @@ const insertData = (db, file, callback) => {
   // Insert some documents
   collection.insertMany(data, (err, result) => {
     assert.strictEqual(err, null)
-    console.log(`inserted data into MongoDB from ${file}`)
+    console.log(`MongoDB\t\t- inserted data into from ${file}`)
     callback(result)
   })
 }
@@ -39,19 +39,19 @@ const options = {
 }
 
 module.exports = {
-  loadData: () => {
+  test: (items) => {
     // Use connect method to connect to the server
 
     MongoClient.connect(url, options, (err, client) => {
       assert.strictEqual(null, err)
-      console.log('Connected successfully to MongoDB server')
+      console.log('MongoDB\t\t- Connected successfully to server')
 
       const db = client.db(dbName)
-      fs.readdir(`${__dirname}/data`, function (err, items) {
-        assert.strictEqual(err, null)
-        items.forEach(item => insertData(db, item, () => { }))
-        client.close()
-      })
+      items.forEach(item => insertData(db, item, () => { 
+        if (items[items.length - 1] === item) {
+          client.close()
+        }
+      }))
     })
   }
 }
