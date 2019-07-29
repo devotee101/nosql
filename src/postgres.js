@@ -2,53 +2,53 @@
 
 const massive = require('massive')
 const assert = require('assert')
-const fs = require('fs')
 const path = require('path')
 
-const insertData = (db, file, callback) => {
+async function loadData (items, db) {
+  return new Promise(resolve => {
+    items.forEach(item => insertData(db, item, () => {
+      if (items[items.length - 1] === item) {
+        resolve()
+      }
+    }))
+  })
+}
+
+async function queryData (db) {
+  const shippers = await db.shippers.findDoc({ shipperID: 1 })
+  assert.strictEqual(shippers[0].shipperID, 1)
+  console.log(`PostgreSQL\t- Successfully queried for shipper`)
+}
+
+const insertData = async (db, file, cb) => {
   const data = require(`./data/${file}`)
   const name = path.parse(file).name
 
   // Delete all
   const table = db[name]
   if (table !== undefined) {
-    table.destroy()
-      .then((result) => {
-        console.log(`deleted ${result.length} rows from ${file} PostgreSQL table`)
-        // Insert some documents
-        db.saveDocs(name, data)
-          .then(result => {
-            console.log(`inserted ${data.length} objects into PostgreSQL from ${file}`)
-            callback(result)
-          }).catch((err) => {
-            console.log(`error saving documents: ${err}`)
-            throw err
-          })
-      })
-      .catch(err => {
-        console.error(err)
-        throw err
-      })
+    const result = await table.destroy()
+    console.log(`PostgreSQL\t- deleted ${result.length} rows from ${file} table`)
+
+    // Insert some documents
+    await db.saveDocs(name, data)
+    console.log(`PostgreSQL\t- inserted ${data.length} objects from ${file}`)
+
+    cb()
   }
 }
 
 module.exports = {
-  loadData: () => {
-    massive({
+  test: async (items) => {
+    const db = await massive({
       host: process.env.POSTGRES_HOST,
       port: 5432,
       database: process.env.POSTGRES_DB,
       user: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD
-    }).then(db => {
-      console.log('connected to PostgreSQL!')
-      fs.readdir(`${__dirname}/data`, function (err, items) {
-        assert.strictEqual(err, null)
-        items.forEach(item => insertData(db, item, () => { }))
-      })
-    }).catch((err) => {
-      console.error(err)
-      console.log(`error connecting to ${process.env.POSTGRES_HOST}`)
     })
+
+    await loadData(items, db)
+    await queryData(db)
   }
 }
