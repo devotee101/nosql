@@ -35,3 +35,5 @@ services:
     env_file:
     - .env
     image: postgres:11.2-alpine
+    ports:
+    - 5432:5432
