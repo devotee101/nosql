@@ -22,7 +22,6 @@ async function queryData (db) {
   const products = await db.products.findDoc({ supplierID: 2 })
   assert.strictEqual(products.length, 4)
   console.log(`PostgreSQL\t- Successfully queried for products`)
-  console.log(products)
 }
 
 const insertData = async (db, file, cb) => {
