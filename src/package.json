@@ -18,7 +18,7 @@
     "assert": "^2.0.0",
     "dotenv": "^8.0.0",
     "massive": "^5.11.2",
-    "mongodb": "~3.0.0"
+    "mongodb": "~3.1.13"
   },
   "devDependencies": {
     "nodemon": "^1.19.1"
